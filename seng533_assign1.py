@@ -72,7 +72,8 @@ def calculateAnswers(filename):
         "\\\\isp-01\Process(server#14)\% Privileged Time", "\\\\isp-01\Process(server#14)\% User Time",
         "\\\\isp-01\Process(server#15)\% Privileged Time", "\\\\isp-01\Process(server#15)\% User Time"
     ]
-    print_averages(columns, app_process_cols)
+    # print_averages(columns, app_process_cols)
+    get_averages(columns, app_process_cols)
 
     print("\n__Utilization for DB Server__")
     db_process_cols = ["\Process(db2syscs)\% User Time", "\Process(db2syscs)\% Privileged Time"]
@@ -113,6 +114,31 @@ def print_averages(columns, col_names):
             total += float(value)
             count += 1
         print(col + ": " + str(total/count))
+
+def get_averages(columns, col_names):
+
+    prev_col = None
+    for col in col_names:
+        total = 0
+        count = 0
+        # try:
+        #     columns[col] = [float(i) for i in columns[col]] #convert values to float
+        # except Exception as e:
+        #     print(e) 
+    
+        for value in columns[col]:
+            if value == "":
+                count += 1
+                continue
+            total += float(value)
+            count += 1
+        if prev_col == None:
+            prev_col = total/count
+        else:
+            cur_col = total/count
+            print(col)
+            print (str(prev_col + cur_col))
+            prev_col = None
 
 def main():
     if len(sys.argv) < 2:
