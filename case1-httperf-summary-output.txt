@@ -1,0 +1,29 @@
+httperf --client=0/1 --server=134.117.61.81 --port=443 --uri=/ --period=e1.112 --send-buffer=4096 --recv-buffer=16384 --session-cookies --ssl --wsesslog=10000,1.000,/opt/data/bp-htz-1.txt
+Maximum connect burst length: 2
+
+Total: connections 10000 requests 89602 replies 89592 test-duration 11136.199 s
+
+Connection rate: 0.9 conn/s (1113.6 ms/conn, <=450 concurrent connections)
+Connection time [ms]: min 24451.1 avg 368514.5 max 6306556.7 median 0.0 stddev 560121.0
+Connection time [ms]: connect 64.9
+Connection length [replies/conn]: 9.248
+
+Request rate: 8.0 req/s (124.3 ms/req)
+Request size [B]: 205.0
+
+Reply rate [replies/s]: min 0.4 avg 8.0 max 14.8 stddev 1.7 (2227 samples)
+Reply time [ms]: response 1398.6 transfer 84.7
+Reply size [B]: header 259.0 content 6415.0 footer 1.0 (total 6675.0)
+Reply status: 1xx=0 2xx=75874 3xx=13718 4xx=0 5xx=0
+
+CPU time [s]: user 1959.16 system 9175.73 (user 17.6% system 82.4% total 100.0%)
+Net I/O: 54.1 KB/s (0.4*10^6 bps)
+
+Errors: total 0 client-timo 0 socket-timo 0 connrefused 0 connreset 0
+Errors: fd-unavail 0 addrunavail 0 ftab-full 0 other 0
+
+Session rate [sess/s]: min 0.00 avg 0.87 max 2.60 stddev 0.43 (9688/9688)
+Session: avg 1.00 connections/session
+Session lifetime [s]: 368.5
+Session failtime [s]: 0.0
+Session length histogram: 0 0 0 2002 2060 1217 830 596 432 370 244 211 186 169 139 120 87 79 79 59 54 65 54 36 26 33 28 32 23 27 23 23 25 20 15 17 12 15 13 16 12 11 13 4 8 8 12 3 10 10 9 5 7 3 7 6 4 4 7 5 3 1 2 5 3 3 2 2 1 4 4 5 4 4 1 2 2 0 0 1 2 2 5 2 0 3 2 2 3 4 3 1 2 2 0 1 1 1 0 1 0 2 2 2 3 0 1 1 0 1 0 0 1 1 0 0 0 0 1 2

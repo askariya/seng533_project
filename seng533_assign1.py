@@ -2,9 +2,9 @@ import sys
 import csv
 from collections import defaultdict
 
-def calculateAnswers(filename):
+def calculateAnswers(csv_file, txt_file):
     columns = defaultdict(list) # each value in each column is appended to a list
-    file = filename
+    file = csv_file
     reader = csv.DictReader(open(file, newline=""), dialect="excel")
     for row in reader:
         for (k,v) in row.items(): # go over each column name and value 
@@ -80,7 +80,7 @@ def calculateAnswers(filename):
     print_averages(columns, db_process_cols)
 
     #5 A) part 1
-    input_file = open("case1-httperf-detailed-output.txt","r")
+    input_file = open(txt_file,"r")
     line_count = -1
     total_resp_time = 0
     for line in input_file:
@@ -101,6 +101,7 @@ def calculateAnswers(filename):
 
 
 def print_averages(columns, col_names):
+    col_total = 0
     for col in col_names:
         total = 0
         count = 0
@@ -113,7 +114,9 @@ def print_averages(columns, col_names):
                 continue
             total += float(value)
             count += 1
+        col_total = col_total + (total/count)        
         print(col + ": " + str(total/count))
+    print("Sum: " + str(col_total))
 
 def get_averages(columns, col_names):
 
@@ -141,12 +144,13 @@ def get_averages(columns, col_names):
             prev_col = None
 
 def main():
-    if len(sys.argv) < 2:
-        print('Usage: ' + sys.argv[0] + ' <filename>')
+    if len(sys.argv) < 3:
+        print('Usage: ' + sys.argv[0] + ' <csv_file> <txt_file>')
         sys.exit(1)
 
-    filename = sys.argv[1]
-    calculateAnswers("case1-perfmon-data.csv")
+    csv_file = sys.argv[1]
+    txt = sys.argv[2]
+    calculateAnswers(csv_file, txt)
 
 
 if __name__ == '__main__':
