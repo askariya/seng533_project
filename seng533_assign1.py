@@ -43,9 +43,6 @@ def calculateAnswers(csv_file, txt_file):
     "\Processor(0)\% User Time", "\Process(Idle)\% Processor Time"]
 
     print_averages(columns, dp_column_names)
-
-    print("\n__Utilization for Web App Processes__")
-    # print_averages(columns, dp_column_names)
     
     #4, part 4
     print("\n__Utilization for Web App Processes__")
@@ -80,18 +77,33 @@ def calculateAnswers(csv_file, txt_file):
     print_averages(columns, db_process_cols)
 
     #5 A) part 1
+    print("\n__________5) A.1___________")
     input_file = open(txt_file,"r")
     line_count = -1
     total_resp_time = 0
+    total_conn_time = 0
+    total_firstbyte_time = 0
+    total_lastbyte_time = 0
     for line in input_file:
         if line_count == -1:
             line_count = 0
             continue      
         line_count+=1
         line = line.split(",")
+        #[2]Time taken to open connection with server (ms) + [3]Time taken to receive first byte of reply (ms) + 
+        #[4]Time taken to receive last byte of reply (ms)
+        total_conn_time += float(line[2])
+        total_firstbyte_time += float(line[3])
+        total_lastbyte_time += float(line[4])
         total_resp_time += (float(line[2]) + float(line[3]) + float(line[4])) 
 
     mean_resp_time = total_resp_time/line_count
+    avg_conn_time = total_conn_time/line_count
+    avg_firstbyte_time = total_firstbyte_time/line_count
+    avg_lastbyte_time = total_lastbyte_time/line_count
+    print("Avg Conn Time: " + str(avg_conn_time))
+    print("Avg First Byte Time: " + str(avg_firstbyte_time))
+    print("Avg Last Byte Time: " + str(avg_lastbyte_time))
     print("\nMean Response Time: " + str(mean_resp_time))
 
 
@@ -99,6 +111,27 @@ def calculateAnswers(csv_file, txt_file):
     req_per_sec = (line_count/11139282.538)*1000
     print("Requests/sec: " + str(req_per_sec))
 
+    #6 B)
+    print("\n__________6) B___________")
+    total_time = None
+    num_requests = None
+    if txt_file == "case1-httperf-detailed-output.txt" and csv_file == "case1-perfmon-data.csv":
+        total_time = 11064
+        num_requests = 89602
+    elif txt_file == "case2-httperf-detailed-output.txt" and csv_file == "case2-perfmon-data.csv":
+        total_time = 12026
+        num_requests = 90400
+    else:
+        raise Exception("Invalid File Names! Make sure you are using matching CSV and TXT files.")
+
+    print("\n__Demand for Web Process__")
+    get_demands(columns, wa_process_cols, total_time, num_requests)
+
+    print("\n__Demand for App Processes__")
+    get_demands_app(columns, app_process_cols, total_time, num_requests)
+
+    print("\n__Demand for DB Process__")
+    get_demands(columns, db_process_cols, total_time, num_requests)
 
 def print_averages(columns, col_names):
     col_total = 0
@@ -124,10 +157,6 @@ def get_averages(columns, col_names):
     for col in col_names:
         total = 0
         count = 0
-        # try:
-        #     columns[col] = [float(i) for i in columns[col]] #convert values to float
-        # except Exception as e:
-        #     print(e) 
     
         for value in columns[col]:
             if value == "":
@@ -142,6 +171,53 @@ def get_averages(columns, col_names):
             print(col)
             print (str(prev_col + cur_col))
             prev_col = None
+
+def get_demands(columns, col_names, total_time, num_requests):
+    col_total = 0
+    for col in col_names:
+        total = 0
+        count = 0
+        # try:
+        #     columns[col] = [float(i) for i in columns[col]] #convert values to float
+        # except Exception as e:
+        #     print(e) 
+        for value in columns[col]:
+            if value == "":
+                continue
+            total += float(value)
+            count += 1
+        col_total = col_total + (total/count)        
+        # print(col + ": " + str(total/count))
+    utilization = col_total/100
+    demand = ((utilization*total_time)/num_requests)*1000
+    print("Demand: " + str(demand)) 
+
+def get_demands_app(columns, col_names, total_time, num_requests):
+
+    prev_col = None
+    for col in col_names:
+        total = 0
+        count = 0
+    
+        for value in columns[col]:
+            if value == "":
+                count += 1
+                continue
+            total += float(value)
+            count += 1
+        if prev_col == None:
+            prev_col = total/count
+        else:
+            cur_col = total/count
+            # print(col)
+            # print (str(prev_col + cur_col))
+
+            utilization = (prev_col + cur_col)/100
+            demand = ((utilization*total_time)/num_requests)*1000
+            print(str(demand)) 
+
+            prev_col = None
+            
 
 def main():
     if len(sys.argv) < 3:
