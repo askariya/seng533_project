@@ -2,6 +2,56 @@ import sys
 import csv
 from collections import defaultdict
 
+def do5B():
+    filenameCase1 = "case1-httperf-detailed-output.txt"
+    filenameCase2 = "case2-httperf-detailed-output.txt"
+
+    input_file = open(filenameCase1,"r")
+    min_bytes_per_ms = float('inf')
+    total_bytes_per_ms = 0
+    line_count = -1
+    total_resp_time = 0
+    for line in input_file:
+        if line_count == -1:
+            line_count = 0
+            continue      
+        line_count+=1
+        line = line.split(",")
+        resp_time = (float(line[2]) + float(line[3]) + float(line[4]))
+        total_resp_time += resp_time
+        total_bytes_per_ms += float(line[6])/resp_time
+        if float(line[6])/resp_time < min_bytes_per_ms:
+            min_bytes_per_ms = float(line[6])/resp_time
+
+    mean_resp_time = total_resp_time/line_count
+    print("\nMean Response Time Case1: " + str(mean_resp_time))
+    print("Mean KB/Sec Case1: " + str(total_bytes_per_ms/line_count))
+    print("Min KB/Sec Case1: " + str(min_bytes_per_ms))
+    print("Total Requests: " + str(line_count))
+
+    min_bytes_per_ms = float('inf')
+    mean_bytes_per_ms = 0
+    input_file = open(filenameCase2,"r")
+    line_count = -1
+    total_resp_time = 0
+    for line in input_file:
+        if line_count == -1:
+            line_count = 0
+            continue      
+        line_count+=1
+        line = line.split(",")
+        resp_time = (float(line[2]) + float(line[3]) + float(line[4]))
+        total_resp_time += resp_time 
+        total_bytes_per_ms += float(line[6])/resp_time
+        if float(line[6])/resp_time < min_bytes_per_ms:
+            min_bytes_per_ms = float(line[6])/resp_time
+
+    mean_resp_time = total_resp_time/line_count
+    print("\nMean Response Time Case2: " + str(mean_resp_time))
+    print("Mean KB/Sec Case2: " + str(total_bytes_per_ms/line_count))
+    print("Min KB/Sec Case2: " + str(min_bytes_per_ms))
+    print("Total Requests: " + str(line_count))
+
 def calculateAnswers(csv_file, txt_file):
     columns = defaultdict(list) # each value in each column is appended to a list
     file = csv_file
@@ -111,6 +161,9 @@ def calculateAnswers(csv_file, txt_file):
     req_per_sec = (line_count/11139282.538)*1000
     print("Requests/sec: " + str(req_per_sec))
 
+    # 5 B)
+    do5B()
+
     #6 B)
     print("\n__________6) B___________")
     total_time = None
@@ -132,6 +185,7 @@ def calculateAnswers(csv_file, txt_file):
 
     print("\n__Demand for DB Process__")
     get_demands(columns, db_process_cols, total_time, num_requests)
+    
 
 def print_averages(columns, col_names):
     col_total = 0
